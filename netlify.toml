@@ -1,0 +1,9 @@
+# Configuración de Netlify para Agro Arauco
+[build]
+  # No usamos framework: publicamos la raíz tal cual
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  # Node 18 trae fetch nativo (lo usa crear-pago.js)
+  node_bundler = "esbuild"
