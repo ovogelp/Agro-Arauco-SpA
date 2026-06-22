@@ -148,6 +148,54 @@
       transition: background .2s, transform .15s;
     }
     .btn-primary:hover { background: var(--fuego); color: var(--blanco); transform: translateY(-2px); }
+
+    /* Botón COMPRAR del hero — destacado */
+    .btn-comprar-hero {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      background: linear-gradient(135deg, var(--ambar) 0%, var(--fuego) 100%);
+      color: white;
+      padding: 0.9rem 2rem;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      box-shadow: 0 6px 22px rgba(231,111,81,0.45);
+      transition: transform .18s, box-shadow .2s;
+      position: relative;
+      overflow: hidden;
+      animation: pulso-compra 2.6s ease-in-out infinite;
+    }
+    .btn-comprar-hero svg { flex-shrink: 0; }
+    .btn-comprar-hero:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 10px 30px rgba(231,111,81,0.6);
+      animation: none;
+    }
+    /* Brillo que cruza el botón */
+    .btn-comprar-hero::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -120%;
+      width: 60%; height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent);
+      transform: skewX(-20deg);
+      animation: brillo-compra 3.2s ease-in-out infinite;
+    }
+    @keyframes pulso-compra {
+      0%, 100% { box-shadow: 0 6px 22px rgba(231,111,81,0.45); }
+      50% { box-shadow: 0 6px 30px rgba(231,111,81,0.7), 0 0 0 6px rgba(244,162,97,0.12); }
+    }
+    @keyframes brillo-compra {
+      0%, 60% { left: -120%; }
+      100% { left: 130%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .btn-comprar-hero { animation: none; }
+      .btn-comprar-hero::after { display: none; }
+    }
     .btn-outline {
       border: 2px solid var(--moss);
       color: var(--moss);
@@ -732,7 +780,10 @@
       </div>
 
       <div class="hero-ctas">
-        <a href="#productos" class="btn-primary">Ver nuestros productos</a>
+        <a href="#productos" class="btn-comprar-hero" onclick="setTimeout(function(){var c=document.getElementById('cantidadSacos');if(c){c.focus();}},600)">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+          Comprar pellets ahora
+        </a>
         <a href="#contacto" class="btn-outline">Contáctanos</a>
       </div>
     </div>
@@ -1117,6 +1168,16 @@
           </div>
         </div>
         <div class="video-caption">Combustión y calidad del producto</div>
+      </div>
+
+      <div class="video-facade" id="vid3" onclick="loadVideo('vid3','JOVgEZVh3LY')" role="button" tabindex="0" aria-label="Reproducir video 3 de Agro Arauco" onkeydown="if(event.key==='Enter')loadVideo('vid3','JOVgEZVh3LY')">
+        <img src="https://img.youtube.com/vi/JOVgEZVh3LY/hqdefault.jpg" alt="Video Agro Arauco – Proyecto de valorización de biomasa" loading="lazy" />
+        <div class="video-play">
+          <div class="video-play-btn">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+        <div class="video-caption">Nuestro proyecto en terreno</div>
       </div>
 
     </div>
