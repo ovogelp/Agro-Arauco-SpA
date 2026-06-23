@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" sizes="180x180" href="assets/img/peumito-icon-180.png" />
+  <link rel="apple-touch-icon" href="assets/img/peumito-icon-180.png" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -148,54 +150,6 @@
       transition: background .2s, transform .15s;
     }
     .btn-primary:hover { background: var(--fuego); color: var(--blanco); transform: translateY(-2px); }
-
-    /* Botón COMPRAR del hero — destacado */
-    .btn-comprar-hero {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.55rem;
-      background: linear-gradient(135deg, var(--ambar) 0%, var(--fuego) 100%);
-      color: white;
-      padding: 0.9rem 2rem;
-      border-radius: 50px;
-      font-weight: 800;
-      font-size: 0.95rem;
-      text-decoration: none;
-      letter-spacing: 0.03em;
-      box-shadow: 0 6px 22px rgba(231,111,81,0.45);
-      transition: transform .18s, box-shadow .2s;
-      position: relative;
-      overflow: hidden;
-      animation: pulso-compra 2.6s ease-in-out infinite;
-    }
-    .btn-comprar-hero svg { flex-shrink: 0; }
-    .btn-comprar-hero:hover {
-      transform: translateY(-3px) scale(1.03);
-      box-shadow: 0 10px 30px rgba(231,111,81,0.6);
-      animation: none;
-    }
-    /* Brillo que cruza el botón */
-    .btn-comprar-hero::after {
-      content: '';
-      position: absolute;
-      top: 0; left: -120%;
-      width: 60%; height: 100%;
-      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent);
-      transform: skewX(-20deg);
-      animation: brillo-compra 3.2s ease-in-out infinite;
-    }
-    @keyframes pulso-compra {
-      0%, 100% { box-shadow: 0 6px 22px rgba(231,111,81,0.45); }
-      50% { box-shadow: 0 6px 30px rgba(231,111,81,0.7), 0 0 0 6px rgba(244,162,97,0.12); }
-    }
-    @keyframes brillo-compra {
-      0%, 60% { left: -120%; }
-      100% { left: 130%; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .btn-comprar-hero { animation: none; }
-      .btn-comprar-hero::after { display: none; }
-    }
     .btn-outline {
       border: 2px solid var(--moss);
       color: var(--moss);
@@ -704,6 +658,103 @@
       50% { box-shadow: 0 4px 32px rgba(37,211,102,0.75), 0 0 0 8px rgba(37,211,102,0.12); }
     }
 
+    /* ── PEUMITO (mascota) ── */
+    @keyframes peumito-float {
+      0%, 100% { transform: translateY(0) rotate(-1deg); }
+      50%      { transform: translateY(-12px) rotate(1deg); }
+    }
+    @keyframes peumito-flicker {
+      0%, 100% { opacity: .8;  transform: translateX(-50%) scale(1); }
+      50%      { opacity: 1;   transform: translateX(-50%) scale(1.12); }
+    }
+
+    .hero-content { position: relative; }
+    .peumito-hero-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      max-width: 230px;
+    }
+    .peumito-hero-glow {
+      position: absolute;
+      top: -6%;
+      left: 50%;
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(244,162,97,.55) 0%, rgba(231,111,81,.22) 45%, transparent 70%);
+      filter: blur(6px);
+      animation: peumito-flicker 2.6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .peumito-hero-img {
+      width: 100%;
+      max-width: 190px;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 18px 20px rgba(0,0,0,.35));
+      animation: peumito-float 4.6s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+    .peumito-speech {
+      position: absolute;
+      top: -6px;
+      left: 100%;
+      margin-left: 14px;
+      background: var(--crema);
+      color: var(--verde-bosque);
+      font-weight: 600;
+      font-size: 0.82rem;
+      line-height: 1.35;
+      padding: 0.65rem 0.9rem;
+      border-radius: 14px;
+      width: 190px;
+      text-align: left;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+      animation: peumito-float 4.6s ease-in-out infinite .35s;
+      z-index: 2;
+    }
+    .peumito-speech b { color: var(--fuego); }
+    .peumito-speech::after {
+      content: '';
+      position: absolute;
+      left: -8px; top: 22px;
+      border: 8px solid transparent;
+      border-right-color: var(--crema);
+      border-left: 0;
+    }
+
+    .stock-banner-flex {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-align: left;
+    }
+    .stock-banner-flex .stock-copy { flex: 1; text-align: center; }
+    .peumito-stock-peek {
+      flex-shrink: 0;
+      width: 64px;
+      animation: peumito-float 4.2s ease-in-out infinite;
+      filter: drop-shadow(0 8px 10px rgba(0,0,0,.3));
+    }
+
+    .peumito-float {
+      position: fixed;
+      right: 1.6rem;
+      bottom: 6.4rem;
+      width: 62px;
+      z-index: 9998;
+      cursor: pointer;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      animation: peumito-float 3.8s ease-in-out infinite;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,.3));
+      transition: transform .2s;
+    }
+    .peumito-float:hover { transform: scale(1.08) translateY(-3px); }
+    .peumito-float img { width: 100%; display: block; }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
       nav { display: none; }
@@ -711,10 +762,21 @@
       .progress-bar-bg { width: 200px; }
       .pilares, .productos, .galeria, .videos, .contacto { padding: 2.5rem 1.25rem; }
       .wsp-float { bottom: 1.25rem; right: 1.25rem; }
+      .peumito-float { display: none; }
+      .peumito-speech {
+        left: auto; right: 0; margin-left: 0;
+        top: -54px; width: 170px;
+      }
+      .peumito-speech::after {
+        left: auto; right: 28px; top: auto; bottom: -8px;
+        border-right-color: transparent; border-top-color: var(--crema);
+      }
+      .stock-banner-flex { flex-direction: column; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       .wsp-btn { animation: none; }
+      .peumito-hero-img, .peumito-speech, .peumito-hero-glow, .peumito-stock-peek, .peumito-float { animation: none; }
       * { transition-duration: 0.01ms !important; }
     }
   </style>
@@ -765,6 +827,11 @@
   <!-- ═══════════ HERO ═══════════ -->
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-content">
+      <div class="peumito-hero-wrap">
+        <div class="peumito-hero-glow" aria-hidden="true"></div>
+        <img class="peumito-hero-img" src="assets/img/peumito-mini.png" alt="Peumito, la mascota de Agro Arauco, saludando" width="190" height="273" />
+        <div class="peumito-speech">¡Hola! Soy <b>Peumito</b> 👋 Ven, te muestro el proyecto.</div>
+      </div>
       <h1 id="hero-title">
         Biomasa forestal y agrícola<br>
         para <span>energía limpia</span> en Chile
@@ -780,10 +847,7 @@
       </div>
 
       <div class="hero-ctas">
-        <a href="#productos" class="btn-comprar-hero" onclick="setTimeout(function(){var c=document.getElementById('cantidadSacos');if(c){c.focus();}},600)">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
-          Comprar pellets ahora
-        </a>
+        <a href="#productos" class="btn-primary">Ver nuestros productos</a>
         <a href="#contacto" class="btn-outline">Contáctanos</a>
       </div>
     </div>
@@ -938,12 +1002,17 @@
       border:2px solid var(--ambar);
       box-shadow:0 4px 20px rgba(26,60,42,0.18);
     ">
-      <div style="font-size:1.6rem; margin-bottom:0.4rem;">⏳</div>
-      <div style="color:var(--ambar);font-weight:800;font-size:1rem;letter-spacing:0.04em;margin-bottom:0.3rem;">
-        Stock disponible próximamente
-      </div>
-      <div style="color:var(--moss-claro);font-size:0.82rem;line-height:1.5;">
-        Estamos en fase final de producción. Regístrate por WhatsApp y te avisamos en cuanto tengamos stock disponible para despacho.
+      <div class="stock-banner-flex">
+        <img class="peumito-stock-peek" src="assets/img/peumito-float.png" alt="Peumito" width="64" height="92" />
+        <div class="stock-copy">
+          <div style="font-size:1.6rem; margin-bottom:0.4rem;">⏳</div>
+          <div style="color:var(--ambar);font-weight:800;font-size:1rem;letter-spacing:0.04em;margin-bottom:0.3rem;">
+            Stock disponible próximamente
+          </div>
+          <div style="color:var(--moss-claro);font-size:0.82rem;line-height:1.5;">
+            Estamos en fase final de producción. Regístrate por WhatsApp y te avisamos en cuanto tengamos stock disponible para despacho.
+          </div>
+        </div>
       </div>
       <a href="https://wa.me/56991203706?text=Hola%20Agro%20Arauco%2C%20quiero%20ser%20avisado%20cuando%20tengan%20stock%20disponible%20de%20sus%20productos.%20Mi%20nombre%20es%3A%20_%20_%20_%20Soy%20de%3A%20_%20_%20_"
          target="_blank" rel="noopener"
@@ -1170,16 +1239,6 @@
         <div class="video-caption">Combustión y calidad del producto</div>
       </div>
 
-      <div class="video-facade" id="vid3" onclick="loadVideo('vid3','JOVgEZVh3LY')" role="button" tabindex="0" aria-label="Reproducir video 3 de Agro Arauco" onkeydown="if(event.key==='Enter')loadVideo('vid3','JOVgEZVh3LY')">
-        <img src="https://img.youtube.com/vi/JOVgEZVh3LY/hqdefault.jpg" alt="Video Agro Arauco – Proyecto de valorización de biomasa" loading="lazy" />
-        <div class="video-play">
-          <div class="video-play-btn">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-        </div>
-        <div class="video-caption">Nuestro proyecto en terreno</div>
-      </div>
-
     </div>
   </section>
 
@@ -1216,6 +1275,11 @@
       <small>© 2025 Agro Arauco SPA · Todos los derechos reservados</small>
     </p>
   </footer>
+
+  <!-- ═══════════ PEUMITO FLOTANTE ═══════════ -->
+  <button type="button" class="peumito-float" onclick="document.getElementById('productos').scrollIntoView({behavior:'smooth'})" aria-label="Conoce nuestros productos con Peumito">
+    <img src="assets/img/peumito-float.png" alt="" width="62" height="89" />
+  </button>
 
   <!-- ═══════════ WHATSAPP FLOTANTE ═══════════ -->
   <div class="wsp-float" role="complementary" aria-label="Contacto rápido por WhatsApp">
