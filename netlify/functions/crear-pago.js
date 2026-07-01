@@ -1,118 +1,118 @@
-// ════════════════════════════════════════════════════════════════════
+// ============================================================================
 //  AGRO ARAUCO — Función de pago Mercado Pago (Checkout Pro dinámico)
-// ────────────────────────────────────────────────────────────────────
-//  Esta función corre en el servidor de Netlify, NO en el navegador.
-//  El Access Token se lee desde una variable de entorno segura
-//  (MP_ACCESS_TOKEN), configurada en el panel de Netlify.
-//  NUNCA escribas el token aquí dentro.
-// ════════════════════════════════════════════════════════════════════
+// ----------------------------------------------------------------------------
+//  Recibe cantidad de sacos, región y comuna desde la página, recalcula el
+//  total (producto + despacho) del lado del servidor por seguridad, y crea
+//  una "preferencia de pago" en Mercado Pago. Devuelve el link de checkout.
+//
+//  El Access Token se lee desde la variable de entorno MP_ACCESS_TOKEN
+//  configurada en Netlify (Site settings → Environment variables).
+// ============================================================================
 
-// --- PRECIOS OFICIALES (fuente de verdad, lado servidor) ---
-// Se recalcula aquí para que nadie pueda manipular el monto desde el navegador.
-const PRECIO_SACO = 5250; // CLP por saco de 15 kg
+const PRECIO_SACO = 5250;
 
 const DESPACHO = {
   "Metropolitana": 11000,
-  "O'Higgins":     10500,
-  "Maule":         10000,
-  "Ñuble":          9000,
-  "Biobío":         5000,
-  "La Araucanía":   9000,
-  "Los Ríos":       9500,
-  "Los Lagos":     10000,
-  "Aysén":         10500,
-  "Magallanes":    11000
+  "O'Higgins": 10500,
+  "Maule": 10000,
+  "Ñuble": 9000,
+  "Biobío": 5000,
+  "La Araucanía": 9000,
+  "Los Ríos": 9500,
+  "Los Lagos": 10000,
+  "Aysén": 10500,
+  "Magallanes": 11000
 };
 
 exports.handler = async (event) => {
-  // Solo aceptar POST
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: JSON.stringify({ error: "Método no permitido" }) };
   }
 
-  const token = process.env.MP_ACCESS_TOKEN;
-  if (!token) {
-    return { statusCode: 500, body: JSON.stringify({ error: "Falta configurar MP_ACCESS_TOKEN en Netlify" }) };
+  const accessToken = process.env.MP_ACCESS_TOKEN;
+  if (!accessToken) {
+    return { statusCode: 500, body: JSON.stringify({ error: "Falta configurar MP_ACCESS_TOKEN en Netlify." }) };
   }
 
+  let datos;
   try {
-    const body = JSON.parse(event.body || "{}");
-    const cantidad = parseInt(body.cantidad, 10);
-    const region = (body.region || "").trim();
+    datos = JSON.parse(event.body);
+  } catch {
+    return { statusCode: 400, body: JSON.stringify({ error: "Datos inválidos" }) };
+  }
 
-    // --- Validaciones ---
-    if (!Number.isInteger(cantidad) || cantidad < 1 || cantidad > 500) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Cantidad inválida (1 a 500 sacos)" }) };
-    }
-    if (!(region in DESPACHO)) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Región no disponible para despacho" }) };
-    }
+  const cantidad = parseInt(datos.cantidad, 10);
+  if (!cantidad || cantidad < 1 || cantidad > 500) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Cantidad inválida (debe ser entre 1 y 500 sacos)." }) };
+  }
 
-    // --- Cálculo de montos (lado servidor) ---
-    const costoProductos = PRECIO_SACO * cantidad;
-    const costoDespacho = DESPACHO[region];
+  const region = String(datos.region || "");
+  if (!(region in DESPACHO)) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Región no disponible para despacho." }) };
+  }
+  const costoEnvio = DESPACHO[region];
 
-    // --- URL base del sitio (para redirecciones de retorno) ---
-    const origin = event.headers.origin || "https://agroarauco.cl";
+  // Comuna: informativa, no afecta el precio. Se valida que venga informada.
+  const comuna = String(datos.comuna || "").trim();
+  if (!comuna) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Falta indicar la comuna de destino." }) };
+  }
 
-    // --- Crear la preferencia en Mercado Pago ---
-    const preferencia = {
-      items: [
-        {
-          title: `Pellets de madera 15 kg — ${cantidad} saco(s)`,
-          description: "Combustible ecológico de biomasa forestal · Agro Arauco SPA",
-          quantity: 1,
-          currency_id: "CLP",
-          unit_price: costoProductos
-        },
-        {
-          title: `Despacho a ${region}`,
-          quantity: 1,
-          currency_id: "CLP",
-          unit_price: costoDespacho
-        }
-      ],
-      back_urls: {
-        success: `${origin}/?pago=exito`,
-        failure: `${origin}/?pago=error`,
-        pending: `${origin}/?pago=pendiente`
+  const origin = event.headers.origin || "https://agroarauco.cl";
+
+  const preferencia = {
+    items: [
+      {
+        title: `Pellets de madera 15 kg (${cantidad} ${cantidad === 1 ? "saco" : "sacos"})`,
+        quantity: cantidad,
+        unit_price: PRECIO_SACO,
+        currency_id: "CLP"
       },
-      auto_return: "approved",
-      statement_descriptor: "AGRO ARAUCO",
-      external_reference: `pellets-${cantidad}-${region}-${Date.now()}`
-    };
+      {
+        title: `Despacho a ${comuna}, ${region}`,
+        quantity: 1,
+        unit_price: costoEnvio,
+        currency_id: "CLP"
+      }
+    ],
+    back_urls: {
+      success: `${origin}/?pago=exitoso`,
+      failure: `${origin}/?pago=fallido`,
+      pending: `${origin}/?pago=pendiente`
+    },
+    auto_return: "approved",
+    statement_descriptor: "AGRO ARAUCO",
+    metadata: {
+      region: region,
+      comuna: comuna,
+      cantidad_sacos: cantidad
+    }
+  };
 
-    const resp = await fetch("https://api.mercadopago.com/checkout/preferences", {
+  try {
+    const respuesta = await fetch("https://api.mercadopago.com/checkout/preferences", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(preferencia)
     });
 
-    const data = await resp.json();
+    const resultado = await respuesta.json();
 
-    if (!resp.ok) {
-      return { statusCode: 502, body: JSON.stringify({ error: "Mercado Pago rechazó la solicitud", detalle: data }) };
+    if (!respuesta.ok) {
+      return { statusCode: 502, body: JSON.stringify({ error: "Error al crear el pago", detalle: resultado }) };
     }
 
-    // init_point = URL del checkout donde paga el cliente
     return {
       statusCode: 200,
       body: JSON.stringify({
-        init_point: data.init_point,
-        resumen: {
-          cantidad,
-          region,
-          costoProductos,
-          costoDespacho,
-          total: costoProductos + costoDespacho
-        }
+        init_point: resultado.init_point,
+        total: cantidad * PRECIO_SACO + costoEnvio
       })
     };
-
   } catch (err) {
-    return { statusCode: 500, body: JSON.stringify({ error: "Error interno", detalle: String(err) }) };
+    return { statusCode: 502, body: JSON.stringify({ error: "No se pudo conectar con Mercado Pago." }) };
   }
 };
