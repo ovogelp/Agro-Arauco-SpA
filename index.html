@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" sizes="180x180" href="assets/img/peumito-icon-180.png" />
+  <link rel="apple-touch-icon" href="assets/img/peumito-icon-180.png" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -704,17 +706,104 @@
       50% { box-shadow: 0 4px 32px rgba(37,211,102,0.75), 0 0 0 8px rgba(37,211,102,0.12); }
     }
 
+    /* ── PEUMITO (mascota) ── */
+    @keyframes peumito-float {
+      0%, 100% { transform: translateY(0) rotate(-1deg); }
+      50%      { transform: translateY(-12px) rotate(1deg); }
+    }
+    @keyframes peumito-flicker {
+      0%, 100% { opacity: .8;  transform: translateX(-50%) scale(1); }
+      50%      { opacity: 1;   transform: translateX(-50%) scale(1.12); }
+    }
+    .hero-content { position: relative; }
+    .peumito-hero-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      max-width: 230px;
+    }
+    .peumito-hero-glow {
+      position: absolute;
+      top: -6%; left: 50%;
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(244,162,97,.55) 0%, rgba(231,111,81,.22) 45%, transparent 70%);
+      filter: blur(6px);
+      animation: peumito-flicker 2.6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .peumito-hero-img {
+      width: 100%; max-width: 190px;
+      position: relative; z-index: 1;
+      filter: drop-shadow(0 18px 20px rgba(0,0,0,.35));
+      animation: peumito-float 4.6s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+    .peumito-speech {
+      position: absolute;
+      top: -10px; left: 100%; margin-left: 14px;
+      background: var(--crema); color: var(--verde-bosque);
+      font-weight: 600; font-size: 0.8rem; line-height: 1.35;
+      padding: 0.65rem 0.9rem; border-radius: 14px;
+      width: 205px; text-align: left;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+      animation: peumito-float 4.6s ease-in-out infinite .35s;
+      z-index: 2;
+    }
+    .peumito-speech b { color: var(--fuego); }
+    .peumito-speech::after {
+      content: '';
+      position: absolute;
+      left: -8px; top: 22px;
+      border: 8px solid transparent;
+      border-right-color: var(--crema); border-left: 0;
+    }
+    .stock-banner-flex {
+      display: flex; align-items: center; gap: 1rem; text-align: left;
+    }
+    .stock-banner-flex .stock-copy { flex: 1; text-align: center; }
+    .peumito-stock-peek {
+      flex-shrink: 0; width: 64px;
+      animation: peumito-float 4.2s ease-in-out infinite;
+      filter: drop-shadow(0 8px 10px rgba(0,0,0,.3));
+    }
+    .peumito-float-btn {
+      position: fixed;
+      right: 1.6rem; bottom: 6.4rem;
+      width: 62px; z-index: 9998;
+      cursor: pointer; border: 0;
+      background: transparent; padding: 0;
+      animation: peumito-float 3.8s ease-in-out infinite;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,.3));
+      transition: transform .2s;
+    }
+    .peumito-float-btn:hover { transform: scale(1.08) translateY(-3px); }
+    .peumito-float-btn img { width: 100%; display: block; }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
       nav { display: none; }
-      .hero { padding: 2.5rem 1.25rem 2rem; }
+      .hero { padding: 4.75rem 1.25rem 2rem; }
       .progress-bar-bg { width: 200px; }
       .pilares, .productos, .galeria, .videos, .contacto { padding: 2.5rem 1.25rem; }
       .wsp-float { bottom: 1.25rem; right: 1.25rem; }
+      .peumito-float-btn { display: none; }
+      .peumito-speech {
+        left: auto; right: 0; margin-left: 0;
+        top: -64px; width: 185px;
+      }
+      .peumito-speech::after {
+        left: auto; right: 28px; top: auto; bottom: -8px;
+        border-right-color: transparent; border-top-color: var(--crema);
+      }
+      .stock-banner-flex { flex-direction: column; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       .wsp-btn { animation: none; }
+      .peumito-hero-img, .peumito-speech, .peumito-hero-glow,
+      .peumito-stock-peek, .peumito-float-btn { animation: none; }
       * { transition-duration: 0.01ms !important; }
     }
   </style>
@@ -765,6 +854,11 @@
   <!-- ═══════════ HERO ═══════════ -->
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-content">
+      <div class="peumito-hero-wrap">
+        <div class="peumito-hero-glow" aria-hidden="true"></div>
+        <img class="peumito-hero-img" src="assets/img/peumito-mini.png" alt="Peumito, la mascota de Agro Arauco, saludando" width="190" height="273" />
+        <div class="peumito-speech">¡Hola! Soy <b>Peumito</b> 👋 Conoce el proyecto y reserva tus pellets.</div>
+      </div>
       <h1 id="hero-title">
         Biomasa forestal y agrícola<br>
         para <span>energía limpia</span> en Chile
@@ -938,12 +1032,17 @@
       border:2px solid var(--ambar);
       box-shadow:0 4px 20px rgba(26,60,42,0.18);
     ">
-      <div style="font-size:1.6rem; margin-bottom:0.4rem;">⏳</div>
-      <div style="color:var(--ambar);font-weight:800;font-size:1rem;letter-spacing:0.04em;margin-bottom:0.3rem;">
-        Stock disponible próximamente
-      </div>
-      <div style="color:var(--moss-claro);font-size:0.82rem;line-height:1.5;">
-        Estamos en fase final de producción. Regístrate por WhatsApp y te avisamos en cuanto tengamos stock disponible para despacho.
+      <div class="stock-banner-flex">
+        <img class="peumito-stock-peek" src="assets/img/peumito-float.png" alt="Peumito" width="64" height="92" />
+        <div class="stock-copy">
+          <div style="font-size:1.6rem; margin-bottom:0.4rem;">⏳</div>
+          <div style="color:var(--ambar);font-weight:800;font-size:1rem;letter-spacing:0.04em;margin-bottom:0.3rem;">
+            Stock disponible próximamente
+          </div>
+          <div style="color:var(--moss-claro);font-size:0.82rem;line-height:1.5;">
+            Estamos en fase final de producción. Regístrate por WhatsApp y te avisamos en cuanto tengamos stock disponible para despacho.
+          </div>
+        </div>
       </div>
       <a href="https://wa.me/56991203706?text=Hola%20Agro%20Arauco%2C%20quiero%20ser%20avisado%20cuando%20tengan%20stock%20disponible%20de%20sus%20productos.%20Mi%20nombre%20es%3A%20_%20_%20_%20Soy%20de%3A%20_%20_%20_"
          target="_blank" rel="noopener"
@@ -1216,6 +1315,11 @@
       <small>© 2025 Agro Arauco SPA · Todos los derechos reservados</small>
     </p>
   </footer>
+
+  <!-- ═══════════ PEUMITO FLOTANTE ═══════════ -->
+  <button type="button" class="peumito-float-btn" onclick="document.getElementById('productos').scrollIntoView({behavior:'smooth'})" aria-label="Conoce nuestros productos con Peumito">
+    <img src="assets/img/peumito-float.png" alt="" width="62" height="89" />
+  </button>
 
   <!-- ═══════════ WHATSAPP FLOTANTE ═══════════ -->
   <div class="wsp-float" role="complementary" aria-label="Contacto rápido por WhatsApp">
